@@ -37,11 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     # Third-party apps
     'rest_framework',
     'corsheaders',
-    
+    'channels',
+    'webpush',
     # Tripvo apps
     'users',
     'groups',
@@ -60,6 +60,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+ASGI_APPLICATION = 'tripvo_backend.asgi_channels.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 ROOT_URLCONF = 'tripvo_backend.urls'
 
@@ -157,3 +165,9 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "YOUR_PUBLIC_KEY_HERE",
+    "VAPID_PRIVATE_KEY": "YOUR_PRIVATE_KEY_HERE",
+    "VAPID_ADMIN_EMAIL": "admin@tripvo.com"
+}
