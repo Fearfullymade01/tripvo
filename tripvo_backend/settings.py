@@ -1,3 +1,6 @@
+# OpenAI API Key (for AI Assist)
+import os
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 """
 Django settings for tripvo_backend project.
 
