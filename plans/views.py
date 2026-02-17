@@ -2,6 +2,28 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 # Poll notification endpoint for FastAPI integration
+
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from django.utils import timezone
+from datetime import timedelta
+from .models import Plan, PlanMember, Notification, ItineraryItem, ItemComment
+from .serializers import (
+    PlanSerializer, PlanListSerializer, PlanMemberSerializer,
+    InviteMemberSerializer, NotificationSerializer,
+    ItineraryItemSerializer, ItineraryItemListSerializer, ItemCommentSerializer
+)
+from .services import NotificationService
+
+
+# Poll notification endpoint for FastAPI integration
 class PollNotifyView(APIView):
     permission_classes = [AllowAny]
 
@@ -24,6 +46,71 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
 from .models import Plan, PlanMember, Notification, ItineraryItem, ItemComment
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.utils import timezone
+from datetime import timedelta
+# ...existing code...
+
+class DashboardAPIView(APIView):
+    """
+    API endpoint to aggregate dashboard data for the current user
+    GET /api/dashboard/
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        now = timezone.now()
+
+        # Active plans: status active or upcoming
+        plans = Plan.objects.filter(
+            (Q(creator=user) | Q(members__user=user)),
+            status__in=["active", "upcoming"]
+        ).distinct()
+
+        # Upcoming events: next 30 days
+        upcoming_events = ItineraryItem.objects.filter(
+            Q(plan__creator=user) | Q(plan__members__user=user),
+            start_time__gte=now,
+            start_time__lte=now + timedelta(days=30)
+        ).order_by("start_time").distinct()
+
+        # Pending polls: notifications of type 'poll' and unread
+        pending_polls = Notification.objects.filter(
+            recipient=user,
+            notification_type="poll",
+            is_read=False
+        )
+
+        # Outstanding expenses: expenses not settled for user
+        # Assuming Expense model exists and has a 'settled' field and 'members' relation
+        try:
+            from .expense_models import Expense
+            outstanding_expenses = Expense.objects.filter(
+                plan__in=plans,
+                shares__member__user=user,
+                shares__is_settled=False
+            ).distinct()
+        except ImportError:
+            outstanding_expenses = []
+
+        # Sort/filter options can be handled on frontend or by query params
+
+        return Response({
+            "active_plans": PlanListSerializer(plans, many=True).data,
+            "upcoming_events": ItineraryItemListSerializer(upcoming_events, many=True).data,
+            "pending_polls": NotificationSerializer(pending_polls, many=True).data,
+            "outstanding_expenses": [
+                {
+                    "id": e.id,
+                    "description": getattr(e, "description", ""),
+                    "amount": getattr(e, "amount", 0),
+                    "category": getattr(e, "category", ""),
+                    "plan": getattr(e, "plan_id", None),
+                } for e in outstanding_expenses
+            ]
+        })
 from .serializers import (
     PlanSerializer, PlanListSerializer, PlanMemberSerializer,
     InviteMemberSerializer, NotificationSerializer,

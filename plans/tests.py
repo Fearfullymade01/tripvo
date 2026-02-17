@@ -556,3 +556,57 @@ class ItineraryItemTest(APITestCase):
         item.refresh_from_db()
         self.assertEqual(item.version, orig_version + 1)
         self.assertEqual(item.notes, 'Updated notes')
+
+
+class DashboardAggregationTest(APITestCase):
+    """Test dashboard aggregation endpoint"""
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username='dashboarduser',
+            email='dashboard@example.com',
+            password='testpass123'
+        )
+        self.plan = Plan.objects.create(
+            title='Dashboard Plan',
+            category='event',
+            creator=self.user,
+            status='active'
+        )
+        PlanMember.objects.create(
+            plan=self.plan,
+            user=self.user,
+            role='creator',
+            status='active'
+        )
+        self.client.force_authenticate(user=self.user)
+        # Create itinerary event
+        start = timezone.now() + timedelta(days=2)
+        end = start + timedelta(hours=1)
+        ItineraryItem.objects.create(
+            plan=self.plan,
+            title='Dashboard Event',
+            start_time=start,
+            end_time=end,
+            created_by=self.user
+        )
+        # Create notification (pending poll)
+        Notification.objects.create(
+            recipient=self.user,
+            notification_type='poll',
+            title='Dashboard Poll',
+            message='Vote now!',
+            plan=self.plan,
+            is_read=False
+        )
+
+    def test_dashboard_endpoint(self):
+        response = self.client.get('/api/dashboard/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('active_plans', response.data)
+        self.assertIn('upcoming_events', response.data)
+        self.assertIn('pending_polls', response.data)
+        self.assertIn('outstanding_expenses', response.data)
+        self.assertGreaterEqual(len(response.data['active_plans']), 1)
+        self.assertGreaterEqual(len(response.data['upcoming_events']), 1)
+        self.assertGreaterEqual(len(response.data['pending_polls']), 1)

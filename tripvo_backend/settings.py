@@ -1,5 +1,7 @@
+
 # OpenAI API Key (for AI Assist)
 import os
+from corsheaders.defaults import default_headers
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 FCM_SERVER_KEY = os.environ.get("FCM_SERVER_KEY", "")
 """
@@ -29,7 +31,12 @@ SECRET_KEY = 'django-insecure-4shn%dhhu+3n%$=x#%^+w-(t=zwmtf^s!^a)=%mp+%y(w*(vkj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "tripvo-frontend-99eabd966d03.herokuapp.com",
+    "tripvo-backend-99eabd966d03.herokuapp.com",
+]
 
 
 # Application definition
@@ -163,13 +170,19 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
+    "https://tripvo-frontend-99eabd966d03.herokuapp.com",
 ]
-
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'access-control-allow-origin',
+]
 
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": "YOUR_PUBLIC_KEY_HERE",
