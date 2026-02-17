@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from django.views.generic import RedirectView
+from users.save_device_token_view import SaveDeviceTokenView
 
 
 def api_root(request):
@@ -47,6 +49,8 @@ urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
     path('api/', include('plans.urls')),
+    path('api/', include('notifications.urls')),
+    path('api/save-device-token/', SaveDeviceTokenView.as_view(), name='save-device-token'),
     path('api-auth/', include('rest_framework.urls')),
 ]
 
