@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "tripvo-frontend-99eabd966d03.herokuapp.com",
     "tripvo-backend-99eabd966d03.herokuapp.com",
+    "tripvo-9f0b11844d95.herokuapp.com",
 ]
 
 
