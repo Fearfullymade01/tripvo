@@ -214,6 +214,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3002",
     "http://127.0.0.1:3002",
     "https://tripvo-frontend-99eabd966d03.herokuapp.com",
+    "https://tripvo-app-z3c4-j2od72ipi-gbengas-projects-41891114.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
