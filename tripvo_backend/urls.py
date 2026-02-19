@@ -50,8 +50,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('plans.urls')),
     path('api/', include('notifications.urls')),
+    path('api/', include('users.urls')),
     path('api/save-device-token/', SaveDeviceTokenView.as_view(), name='save-device-token'),
     path('api-auth/', include('rest_framework.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 # Serve media files in development

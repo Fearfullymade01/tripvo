@@ -1,7 +1,5 @@
-
 # OpenAI API Key (for AI Assist)
 import os
-from corsheaders.defaults import default_headers
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 FCM_SERVER_KEY = os.environ.get("FCM_SERVER_KEY", "")
 """
@@ -16,6 +14,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+
+from corsheaders.defaults import default_headers
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,8 +39,8 @@ ALLOWED_HOSTS = [
 ]
 
 
-# Application definition
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +53,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels',
     'webpush',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.apple',
     # Tripvo apps
     'users',
     'groups',
@@ -62,6 +68,31 @@ INSTALLED_APPS = [
     'notifications',
 ]
 
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    },
+    'apple': {
+        'APP': {
+            'client_id': 'YOUR_APPLE_CLIENT_ID',
+            'key': 'YOUR_APPLE_KEY',
+            'team_id': 'YOUR_APPLE_TEAM_ID',
+            'secret': 'YOUR_APPLE_SECRET',
+        }
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -69,6 +100,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
