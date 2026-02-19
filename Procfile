@@ -1,4 +1,4 @@
-web: gunicorn tripvo_backend.wsgi --log-file -
+web: daphne -b 0.0.0.0 -p $PORT tripvo_backend.asgi_channels:application
 so that I can quickly access everything I’m involved in.
 Acceptance Criteria
 • 	Shows:
