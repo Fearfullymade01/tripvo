@@ -20,8 +20,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
-from django.views.generic import RedirectView
+
 from users.save_device_token_view import SaveDeviceTokenView
+
+# Placeholder /polls endpoint
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse as DjangoJsonResponse
+@csrf_exempt
+def polls_placeholder(request):
+    return DjangoJsonResponse({"detail": "This endpoint is not implemented in Django. See FastAPI backend for /polls."}, status=501)
 
 
 def api_root(request):
@@ -45,8 +52,10 @@ def api_root(request):
     })
 
 
+
 urlpatterns = [
     path('', api_root, name='api-root'),
+    path('polls', polls_placeholder, name='polls-placeholder'),
     path('admin/', admin.site.urls),
     path('api/', include('plans.urls')),
     path('api/', include('notifications.urls')),
