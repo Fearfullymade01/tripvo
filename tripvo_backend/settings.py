@@ -246,6 +246,8 @@ CHANNELS_ALLOWED_ORIGINS = [
 # Secure cookies for production
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "None"
 
 # NOTE: There is no /polls endpoint in Django. The only poll-related endpoint is /api/poll_notify/.
 
