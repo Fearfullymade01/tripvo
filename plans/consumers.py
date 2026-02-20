@@ -1,8 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import ItineraryItem, PlanMember
-from .serializers import ItineraryItemSerializer
+
 
 class ItineraryConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -25,6 +24,8 @@ class ItineraryConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_itinerary(self):
+        from .models import ItineraryItem
+        from .serializers import ItineraryItemSerializer
         items = ItineraryItem.objects.filter(plan_id=self.plan_id)
         return ItineraryItemSerializer(items, many=True).data
 
