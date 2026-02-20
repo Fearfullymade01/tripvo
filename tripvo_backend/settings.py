@@ -208,19 +208,28 @@ REST_FRAMEWORK = {
 
 
 # CORS Settings
+
+# CORS and CSRF settings for production
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3002",
     "http://127.0.0.1:3002",
     "https://tripvo-frontend-99eabd966d03.herokuapp.com",
+    "https://tripvo-9f0b11844d95.herokuapp.com",
+]
+
+# Add CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = [
+    "https://tripvo-frontend-99eabd966d03.herokuapp.com",
+    "https://tripvo-9f0b11844d95.herokuapp.com",
+    # Add any custom domains here
 ]
 
 # Allow all Vercel preview URLs using regex
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/[a-zA-Z0-9\-]+\.vercel\.app$",
 ]
-CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'access-control-allow-origin',
@@ -233,6 +242,10 @@ CHANNELS_ALLOWED_ORIGINS = [
     # Allow all Vercel preview URLs
     "https://*.vercel.app",
 ]
+
+# Secure cookies for production
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # NOTE: There is no /polls endpoint in Django. The only poll-related endpoint is /api/poll_notify/.
 
